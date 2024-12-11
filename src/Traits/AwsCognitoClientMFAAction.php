@@ -190,6 +190,13 @@ trait AwsCognitoClientMFAAction
             $firstMfaType=null;
             foreach ($mfaTypes as $mfaType) {
                 if (empty($firstMfaType)) { $firstMfaType=$mfaType; }
+
+                $payload = array_merge($payload, [
+                    'EmailMfaSettings' => [
+                        'Enabled' => ((config('cognito.mfa_setup', 'MFA_NONE')=='MFA_ENABLED') && ($isEnable))?($mfaType=='EMAIL_MFA'):false,
+                        'PreferredMfa' => (($firstMfaType=='EMAIL_MFA') && ($isEnable))
+                    ]
+                ]);
                 
                 $payload = array_merge($payload, [
                     'SMSMfaSettings' => [
